@@ -167,10 +167,11 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         /// <param name="orderId">customer order id</param>
         /// <param name="paymentId">payment id</param>
         /// <param name="bankCardInfo">banking card information</param>
+        /// <param name="token">extenral payment system token</param>
         [HttpPost]
         [Route("{orderId}/processPayment/{paymentId}")]
         [ResponseType(typeof(ProcessPaymentResult))]
-        public IHttpActionResult ProcessOrderPayments(string orderId, string paymentId, [SwaggerOptional] BankCardInfo bankCardInfo)
+        public IHttpActionResult ProcessOrderPayments(string orderId, string paymentId, [SwaggerOptional] BankCardInfo bankCardInfo, [SwaggerOptional] string token)
         {
             var order = _customerOrderService.GetByIds(new[] { orderId }, CustomerOrderResponseGroup.Full.ToString()).FirstOrDefault();
             if (order == null)
@@ -199,7 +200,8 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
                 Order = order,
                 Payment = payment,
                 Store = store,
-                BankCardInfo = bankCardInfo
+                BankCardInfo = bankCardInfo,
+                Parameters = new NameValueCollection() { { nameof(token), token} }
             };
 
             var result = paymentMethod.ProcessPayment(context);
