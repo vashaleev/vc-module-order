@@ -193,6 +193,7 @@ namespace VirtoCommerce.OrderModule.Data.Model
             target.LanguageCode = LanguageCode;
             target.TaxPercentRate = TaxPercentRate;
             target.OuterId = OuterId;
+            target.WorkflowId = WorkflowId;
 
             if (!Addresses.IsNullCollection())
             {

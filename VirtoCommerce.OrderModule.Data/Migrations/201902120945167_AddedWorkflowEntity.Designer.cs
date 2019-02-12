@@ -7,13 +7,13 @@ namespace VirtoCommerce.OrderModule.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class AddWorkflowEntity : IMigrationMetadata
+    public sealed partial class AddedWorkflowEntity : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddWorkflowEntity));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedWorkflowEntity));
         
         string IMigrationMetadata.Id
         {
-            get { return "201902111419495_AddWorkflowEntity"; }
+            get { return "201902120945167_AddedWorkflowEntity"; }
         }
         
         string IMigrationMetadata.Source

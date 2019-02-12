@@ -267,6 +267,7 @@ namespace VirtoCommerce.OrderModule.Data.Repositories
                 var shipmentItems = ShipmentItems.Where(x => shipmentIds.Contains(x.ShipmentId)).ToArray();
                 var packages = ShipmentPackagesPackages.Include(x => x.Items).Where(x => shipmentIds.Contains(x.ShipmentId)).ToArray();
             }
+
             return result;
         }
 

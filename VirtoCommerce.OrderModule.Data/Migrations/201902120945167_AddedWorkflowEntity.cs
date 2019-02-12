@@ -3,7 +3,7 @@ namespace VirtoCommerce.OrderModule.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddWorkflowEntity : DbMigration
+    public partial class AddedWorkflowEntity : DbMigration
     {
         public override void Up()
         {
@@ -13,7 +13,10 @@ namespace VirtoCommerce.OrderModule.Data.Migrations
                     {
                         Id = c.String(nullable: false, maxLength: 128),
                         Workflow = c.String(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 512),
                         MemberId = c.String(maxLength: 128),
+                        IsActive = c.Boolean(nullable: false),
+                        IsDeleted = c.Boolean(nullable: false),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
                         CreatedBy = c.String(maxLength: 64),
