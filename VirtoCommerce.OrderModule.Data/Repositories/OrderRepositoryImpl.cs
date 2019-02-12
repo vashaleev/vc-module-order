@@ -279,5 +279,21 @@ namespace VirtoCommerce.OrderModule.Data.Repositories
                 Remove(order);
             }
         }
+
+        public WorkflowEntity[] GetWorkflows(string[] ids)
+        {
+            var result = Workflows.Where(x => ids.Contains(x.Id)).ToArray();
+
+            return result;
+        }
+
+        public void RemoveWorkflowsByIds(string[] ids)
+        {
+            var workflows = GetWorkflows(ids);
+            foreach (var workflow in workflows)
+            {
+                Remove(workflow);
+            }
+        }
     }
 }
