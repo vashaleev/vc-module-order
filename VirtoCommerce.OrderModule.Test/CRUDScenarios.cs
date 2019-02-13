@@ -39,7 +39,7 @@ namespace VirtoCommerce.OrderModule.Test
             var sampleData = new List<CustomerOrderEntity>(new[] { new CustomerOrderEntity { Id = "1", OrganizationId = "myOrg1" }, new CustomerOrderEntity { Id = "2" } });
             mockRepository.Setup(x => x.CustomerOrders).Returns(sampleData.AsQueryable());
             mockRepository.Setup(x => x.GetCustomerOrdersByIds(It.IsAny<string[]>(), It.IsAny<CustomerOrderResponseGroup>())).Returns(new[] { sampleData.First() });
-            var orderService = new CustomerOrderServiceImpl(() => mockRepository.Object, null, null, null, null, null, null, null, new Moq.Mock<ICustomerOrderTotalsCalculator>().Object);
+            var orderService = new CustomerOrderServiceImpl(() => mockRepository.Object, null, null, null, null, null, null, null, new Moq.Mock<ICustomerOrderTotalsCalculator>().Object, null);
 
             //act
             var result = orderService.SearchCustomerOrders(new CustomerOrderSearchCriteria { OrganizationId = "myOrg1" });
