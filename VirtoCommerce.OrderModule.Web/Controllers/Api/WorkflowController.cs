@@ -100,7 +100,7 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                return BadRequest("No file in request");
+                return BadRequest("No file in request" + ex);
             }
 
             var workflow = new WorkflowModel
