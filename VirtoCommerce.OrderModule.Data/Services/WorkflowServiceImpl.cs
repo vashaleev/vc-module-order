@@ -103,6 +103,29 @@ namespace VirtoCommerce.OrderModule.Data.Services
             EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
         }
 
+        public void Update(WorkflowModel changedWorkflow)
+        {
+            using (var repository = RepositoryFactory())
+            {
+                var workflow = repository.GetWorkflows(new[] { changedWorkflow.Id }).FirstOrDefault(x => !x.IsDeleted);
+                if (workflow == null)
+                {
+                    throw new ArgumentNullException("Model not for changing");
+                }
+
+                if (changedWorkflow.IsActive)
+                {
+                    DeactivatePreviousWorkflows(repository);
+                }
+
+                workflow.Name = changedWorkflow.Name;
+                workflow.IsActive = changedWorkflow.IsActive;
+
+                //repository.Update(workflow);
+                CommitChanges(repository);
+            }
+        }
+
         public GenericSearchResult<WorkflowModel> SearchWorkflows(WorkflowSearchCriteria criteria)
         {
             using (var repository = RepositoryFactory())

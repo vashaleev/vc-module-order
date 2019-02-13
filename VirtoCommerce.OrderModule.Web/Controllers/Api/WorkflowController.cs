@@ -10,8 +10,6 @@ using VirtoCommerce.Domain.Order.Model.Search;
 using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.OrderModule.Web.Security;
 using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Core.Web.Assets;
-using VirtoCommerce.Platform.Core.Web.Security;
 using webModel = VirtoCommerce.OrderModule.Web.Model;
 
 namespace VirtoCommerce.OrderModule.Web.Controllers.Api
@@ -125,17 +123,16 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         }
 
         /// <summary>
-        ///  Update a existing customer order 
+        ///  Update an existing customer order 
         /// </summary>
-        /// <param name="workflow">customer order</param>
+        /// <param name="workflow">workflow change model</param>
         [HttpPut]
         [Route("")]
         [ResponseType(typeof(void))]
         // check permission
-        public IHttpActionResult Update(string workflow)
+        public IHttpActionResult Update(WorkflowModel workflow)
         {
-
-            //_customerOrderService.SaveChanges(new[] { customerOrder });
+            _workflowService.Update(workflow);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
