@@ -164,6 +164,11 @@
     </Compile>
     <Content Include="Scripts\blades\customerOrder-change-log.js" />
     <Content Include="Scripts\blades\customerOrder-change-log.tpl.html" />
+    <Content Include="Scripts\blades\organizationWorkflow\organizationWorkflow-list.js" />
+    <Content Include="Scripts\blades\organizationWorkflow\organizationWorkflow-list.tpl.html" />
+    <Content Include="Scripts\blades\organizationWorkflow\organizationWorkflow-upload.js" />
+    <Content Include="Scripts\blades\organizationWorkflow\organizationWorkflow-upload.tpl.html" />
+    <Content Include="Scripts\resources\organizationWorkflow.js" />
     <Content Include="Scripts\resources\securityAccounts.js" />
     <Compile Include="Security\OrderPredefinedPermissions.cs" />
     <Compile Include="ExportImport\OrderExportImport.cs" />
@@ -231,6 +236,8 @@
     <Content Include="Scripts\widgets\dashboard\statistics-widget.js" />
     <Content Include="Scripts\widgets\notificationsLogWidget.js" />
     <Content Include="Scripts\widgets\notificationsLogWidget.tpl.html" />
+    <Content Include="Scripts\widgets\organizationWorkflow-load-widget.js" />
+    <Content Include="Scripts\widgets\organizationWorkflow-load-widget.tpl.html" />
     <Content Include="Scripts\widgets\payment-address-widget.js" />
     <Content Include="Scripts\widgets\payment-address-widget.tpl.html" />
     <Content Include="Scripts\widgets\payment-transactions-widget.js" />

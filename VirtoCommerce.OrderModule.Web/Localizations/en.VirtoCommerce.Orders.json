@@ -1,4 +1,4 @@
-﻿{
+{
     "orders": {
         "main-menu-title": "Orders",
         "blades": {
@@ -156,7 +156,7 @@
       "widgets": {
         "notifications": {
           "title": "Notifications feed",
-          "subtitle":  "Order notifications feed"
+          "subtitle": "Order notifications feed"
         },
         "customerOrder-address": {
           "title": "Addresses",
@@ -214,6 +214,20 @@
           "items-purchased": "Items purchased",
           "lines-per-order": "Lines per order",
           "revenue-per-customer": "Revenue per customer"
+        },
+        "organization-workflow": {
+          "approval-workflow": "Approval workflow",
+          "title": "Approval workflow upload",
+          "labels": {
+            "select-files": "Select approval workflow file",
+            "workflow-name": "Approval workflow name",
+            "drag-note": "Drop approval workflow (.json) file here",
+            "no-data": "No approval workflow files yet ",
+            "add-workflow": "Add new approval workflow file"
+          },
+          "placeholders": {
+            "workflow-name": "Enter approval workflow name"
+          }
         }
       },
         "dialogs": {
