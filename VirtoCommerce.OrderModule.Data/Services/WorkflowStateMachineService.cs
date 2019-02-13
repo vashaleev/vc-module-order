@@ -21,9 +21,9 @@ namespace VirtoCommerce.OrderModule.Data.Services
             _workflowService = workflowService;
         }
 
-        public void Validate(string workflowId)
+        public void Validate(string workflowJson)
         {
-            WorkflowStateMachine.Validate(LoadWorkflowJson(workflowId));
+            WorkflowStateMachine.Validate(workflowJson);
         }
 
         public IWorkflowStateMachine CreateStateMachine(string workflowId, string initialState = null)
