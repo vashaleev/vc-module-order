@@ -51,7 +51,7 @@
                     <value>Processing</value>
                     <value>Ready to send</value>
                     <value>Cancelled</value>
-                    <value>Partially sent</value>                    
+                    <value>Partially sent</value>
                     <value>Completed</value>
                 </arrayValues>
             </setting>
@@ -118,11 +118,11 @@
                 <description>Send notification when order state changed.</description>
             </setting>
             <setting>
-              <name>Order.AdjustInventory</name>
-              <valueType>boolean</valueType>
-              <defaultValue>true</defaultValue>
-              <title>Adjust inventory for orders</title>
-              <description>Adjust inventory when order state or quantity of products in any of order line items had been changed. WARNING: this setting is intended for demo purposes only, and enabling it may cause unexpected inventory changes!</description>
+                <name>Order.AdjustInventory</name>
+                <valueType>boolean</valueType>
+                <defaultValue>true</defaultValue>
+                <title>Adjust inventory for orders</title>
+                <description>Adjust inventory when order state or quantity of products in any of order line items had been changed. WARNING: this setting is intended for demo purposes only, and enabling it may cause unexpected inventory changes!</description>
             </setting>
             <setting>
                 <name>Order.ExportImport.Description</name>
@@ -141,6 +141,9 @@
             <permission id="order:read" name="View order data" description="Permission to browse and view order data."/>
             <permission id="order:update" name="Update order data" description="Permission to update order data."/>
             <permission id="order:delete" name="Delete order" description="Permission to delete orders."/>
+        </group>
+        <group name="Workflow">
+            <permission id="workflow:create" name="Import workflow" description="Import workflow json."/>
         </group>
     </permissions>
 </module>
