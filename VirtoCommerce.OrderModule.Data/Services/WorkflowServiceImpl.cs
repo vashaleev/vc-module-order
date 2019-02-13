@@ -18,13 +18,10 @@ namespace VirtoCommerce.OrderModule.Data.Services
 {
     public class WorkflowServiceImpl : ServiceBase, IWorkflowService, IWorkflowSearchService
     {
-        private readonly IMemberService _memberService;
-
-        public WorkflowServiceImpl(Func<IOrderRepository> orderRepositoryFactory, IEventPublisher eventPublisher, IMemberService memberService)
+        public WorkflowServiceImpl(Func<IOrderRepository> orderRepositoryFactory, IEventPublisher eventPublisher)
         {
             RepositoryFactory = orderRepositoryFactory;
             EventPublisher = eventPublisher;
-            _memberService = memberService;
         }
 
         protected Func<IOrderRepository> RepositoryFactory { get; }
@@ -35,18 +32,14 @@ namespace VirtoCommerce.OrderModule.Data.Services
             var workflows = GetByIds(ids);
             using (var repository = RepositoryFactory())
             {
+                // ТУТ ГОВНО!!!
                 var changedEntries = workflows.Select(x => new GenericChangedEntry<WorkflowModel>(x, EntryState.Modified));
                 EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
 
                 repository.RemoveWorkflowsByIds(ids);
 
-                //foreach (var order in workflows)
-                //{
-                //    DynamicPropertyService.DeleteDynamicPropertyValues(order);
-                //}
-
                 repository.UnitOfWork.Commit();
-                //Raise domain events after deletion
+
                 EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
             }
         }
@@ -68,8 +61,6 @@ namespace VirtoCommerce.OrderModule.Data.Services
                 DeactivatePreviousWorkflows(repository);
                 foreach (var workflow in workflows)
                 {
-                    //EnsureThatAllOperationsHaveNumber(order);
-
                     var originalEntity = dataExistWorkflows.FirstOrDefault(x => x.Id == workflow.Id);
 
                     var modifiedEntity = AbstractTypeFactory<WorkflowEntity>.TryCreateInstance()
@@ -78,7 +69,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
                     {
                         changeTracker.Attach(originalEntity);
                         var oldEntry = originalEntity.ToModel(AbstractTypeFactory<WorkflowModel>.TryCreateInstance());
-                        //DynamicPropertyService.LoadDynamicPropertyValues(oldEntry);
+
                         changedEntries.Add(new GenericChangedEntry<WorkflowModel>(workflow, oldEntry, EntryState.Modified));
                         modifiedEntity?.Patch(originalEntity);
                     }
@@ -88,18 +79,12 @@ namespace VirtoCommerce.OrderModule.Data.Services
                         changedEntries.Add(new GenericChangedEntry<WorkflowModel>(workflow, EntryState.Added));
                     }
                 }
-                //Raise domain events
+
                 EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
             }
 
-            //Save dynamic properties
-            //foreach (var workflow in workflows)
-            //{
-            //    DynamicPropertyService.SaveDynamicPropertyValues(workflow); //What is this shit?
-            //}
-            //Raise domain events
             EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
         }
 
@@ -121,7 +106,6 @@ namespace VirtoCommerce.OrderModule.Data.Services
                 workflow.Name = changedWorkflow.Name;
                 workflow.IsActive = changedWorkflow.IsActive;
 
-                //repository.Update(workflow);
                 CommitChanges(repository);
             }
         }
@@ -183,7 +167,6 @@ namespace VirtoCommerce.OrderModule.Data.Services
         {
             var query = repository.Workflows;
 
-            // Don't return prototypes by default
             if (criteria.Name != null)
             {
                 query = query.Where(x => x.Name == criteria.Name);
