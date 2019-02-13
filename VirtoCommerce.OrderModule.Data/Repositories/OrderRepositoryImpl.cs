@@ -292,7 +292,8 @@ namespace VirtoCommerce.OrderModule.Data.Repositories
             var workflows = GetWorkflows(ids);
             foreach (var workflow in workflows)
             {
-                Remove(workflow);
+                workflow.IsDeleted = true;
+                Update(workflow);
             }
         }
     }

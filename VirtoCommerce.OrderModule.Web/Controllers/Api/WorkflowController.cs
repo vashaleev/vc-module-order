@@ -1,5 +1,7 @@
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -8,6 +10,7 @@ using VirtoCommerce.Domain.Order.Model.Search;
 using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.OrderModule.Web.Security;
 using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.Platform.Core.Web.Assets;
 using VirtoCommerce.Platform.Core.Web.Security;
 using webModel = VirtoCommerce.OrderModule.Web.Model;
 
@@ -81,16 +84,44 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         /// <summary>
         /// Add new workflow to system
         /// </summary>
-        /// <param name="workflow">customer order</param>
+        /// <param name="name">name of new workflow</param>
+        /// <param name="memberId">organizationId for workflow</param>
         [HttpPost]
-        [Route("")]
+        [Route("upload")]
         [ResponseType(typeof(WorkflowModel))]
-        //[CheckPermission(Permission = OrderPredefinedPermissions.Create)]
-        public IHttpActionResult CreateWorkflow(WorkflowModel workflow)
+        //[CheckPermission(Permission = WorkflowPredefinedPermissions)]
+        public async Task<IHttpActionResult> CreateWorkflow(string name, string memberId)
         {
+            if (memberId == null)
+            {
+                return BadRequest("OrganizationId can't be null");
+            }
+
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var provider = new MultipartMemoryStreamProvider();
+
+            var file = await Request.Content.ReadAsMultipartAsync(provider);
+
+            name = file.Contents[0].Headers.Where(x => x.Key == "Content Type").ToString();
+
+            var fileString = await file.Contents[0].ReadAsStringAsync();
+
+            var workflow = new WorkflowModel
+            {
+                Name = name,
+                MemberId = memberId,
+                Workflow = fileString,
+                IsActive = true,
+                IsDeleted = false
+            };
+
             _workflowService.SaveChanges(new[] { workflow });
 
-            return Ok(workflow);
+            return Ok(name);
         }
 
         /// <summary>
@@ -100,16 +131,12 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [HttpPut]
         [Route("")]
         [ResponseType(typeof(void))]
+        // check permission
         public IHttpActionResult Update(string workflow)
         {
-            //Check scope bound permission
-            //var scopes = _permissionScopeService.GetObjectPermissionScopeStrings(customerOrder).ToArray();
-            //if (!_securityService.UserHasAnyPermission(User.Identity.Name, scopes, OrderPredefinedPermissions.Read))
-            //{
-            //    throw new HttpResponseException(HttpStatusCode.Unauthorized);
-            //}
 
             //_customerOrderService.SaveChanges(new[] { customerOrder });
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -123,7 +150,7 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         //[CheckPermission(Permission = OrderPredefinedPermissions.Delete)]
         public IHttpActionResult DeleteOrdersByIds([FromUri] string[] ids)
         {
-            //_customerOrderService.Delete(ids);
+            _workflowService.Delete(ids);
             return StatusCode(HttpStatusCode.NoContent);
         }
 
