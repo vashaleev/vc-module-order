@@ -109,7 +109,10 @@ namespace VirtoCommerce.OrderModule.Data.Services
                     DeactivatePreviousWorkflows(repository);
                 }
 
-                workflow.Name = changedWorkflow.Name;
+                if (!string.IsNullOrWhiteSpace(changedWorkflow.Name))
+                {
+                    workflow.Name = changedWorkflow.Name;
+                }
                 workflow.IsActive = changedWorkflow.IsActive;
 
                 CommitChanges(repository);

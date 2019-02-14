@@ -292,6 +292,7 @@ namespace VirtoCommerce.OrderModule.Data.Repositories
             var workflows = GetWorkflows(ids);
             foreach (var workflow in workflows)
             {
+                workflow.IsActive = false;
                 workflow.IsDeleted = true;
                 Update(workflow);
             }

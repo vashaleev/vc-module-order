@@ -201,6 +201,9 @@ angular.module(moduleName, ['virtoCommerce.catalogModule', 'virtoCommerce.pricin
         };
         knownOperations.registerOperation(shipmentOperation);
 
+
+
+
         //Register widgets
         widgetService.registerWidget({
             controller: 'virtoCommerce.orderModule.notificationsLogWidgetController',
@@ -212,6 +215,12 @@ angular.module(moduleName, ['virtoCommerce.catalogModule', 'virtoCommerce.pricin
             template: 'Modules/$(VirtoCommerce.Orders)/Scripts/widgets/customerOrder-items-widget.tpl.html'
         };
         widgetService.registerWidget(operationItemsWidget, 'customerOrderDetailWidgets');
+
+        var organizationWorkflowLoadWidget = {
+            controller: 'virtoCommerce.orderModule.organizationWorkflowLoadWidgetController',
+            template: 'Modules/$(VirtoCommerce.Orders)/Scripts/widgets/organizationWorkflow-load-widget.tpl.html'
+        };
+        widgetService.registerWidget(organizationWorkflowLoadWidget, 'organizationDetail2');
 
         //Use the own order changes log blade, which extracts data from the order module API
         widgetService.registerWidget({
