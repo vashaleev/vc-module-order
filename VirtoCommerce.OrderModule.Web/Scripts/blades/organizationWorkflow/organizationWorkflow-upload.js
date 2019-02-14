@@ -1,65 +1,63 @@
 angular.module('virtoCommerce.orderModule')
     .controller('virtoCommerce.orderModule.organizationWorkflowUploadController', ['$rootScope', '$scope', 'platformWebApp.dialogService', 'virtoCommerce.contentModule.contentApi', 'FileUploader', 'platformWebApp.bladeNavigationService', function ($rootScope, $scope, dialogService, contentApi, FileUploader, bladeNavigationService) {
         var blade = $scope.blade;
-        console.log('upload');
-        console.log(blade);
-        // create the uploader
-        var uploader = $scope.uploader = new FileUploader({
-            scope: $scope,
-            headers: { Accept: 'application/json' },
-            url: 'api/content/themes/' + blade.storeId + '?folderUrl=',
-            queueLimit: 1,
-            autoUpload: true,
-            removeAfterUpload: false
-        });
+        blade.memberID = (blade.parentBlade.origEntity) ? blade.parentBlade.origEntity.id : blade.parentBlade.parentBlade.origEntity.id;
 
-        // ADDING FILTERS
-        // Zips only
-        uploader.filters.push({
-            name: 'jsonFilter',
-            fn: function (i /*{File|FileLikeObject}*/, options) {
-                return i.name.toLowerCase().endsWith('.json');
-            }
-        });
+        blade.isLoading = false;
 
-        uploader.onAfterAddingFile = function (item) {
-            $scope.workflowName = item.file.name.substring(0, item.file.name.lastIndexOf('.'));
-            blade.isLoading = true;
-        };
 
-        uploader.onSuccessItem = function (fileItem, files) {
-            contentApi.unpack({
-                contentType: 'themes',
-                storeId: blade.storeId,
-                archivepath: files[0].name,
-                destPath: $scope.themeName
-            }, function (data) {
-                if (blade.isActivateAfterSave) {
-                    var prop = _.findWhere(blade.store.dynamicProperties, { name: 'DefaultThemeName' });
-                    prop.values = [{ value: $scope.themeName }];
-
-                    blade.store.$update(refreshParentAndClose, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
-                } else {
-                    refreshParentAndClose();
-                }
-            },
-                function (error) {
-                    uploader.clearQueue();
-                    bladeNavigationService.setError('Error ' + error.status, $scope.blade);
+        function initialize() {
+            console.log("initialize");
+            if (!$scope.uploader) {
+                var uploader = $scope.uploader = new FileUploader({
+                    scope: $scope,
+                    headers: { Accept: 'application/json' },
+                    queueLimit: 1,
+                    autoUpload: false,
+                    removeAfterUpload: true
                 });
+
+                // ADDING FILTERS
+                // json only
+                uploader.filters.push({
+                    name: 'jsonFilter',
+                    fn: function (i /*{File|FileLikeObject}*/, options) {
+                        return i.name.toLowerCase().endsWith('.json');
+                    }
+                });
+
+                uploader.onAfterAddingFile = function (item) {
+                    console.log(item)
+                    item.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
+                    uploader.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
+                    uploader.uploadAll();
+                    blade.isLoading = true;
+                };
+
+                uploader.onSuccessItem = function (fileItem, files) {
+                    blade.isLoading = false;
+                    refreshParentAndClose();
+                };
+
+                uploader.onErrorItem = function (item, response, status, headers) {
+                    bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
+                };
+            }
+        }
+
+        $scope.setForm = function (form) {
+            $scope.formScope = form;
         };
 
         function refreshParentAndClose() {
-            $scope.bladeClose();
+           // $scope.bladeClose();
             blade.parentBlade.refresh();
-            $rootScope.$broadcast("cms-statistics-changed", blade.storeId);
+           // $rootScope.$broadcast("cms-statistics-changed", blade.storeId);
         }
 
-        uploader.onErrorItem = function (item, response, status, headers) {
-            bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
-        };
+        
 
-        blade.title = 'orders.widgets.organization-workflow.title',
+        blade.title = 'orders.organization-workflow.title',
         blade.headIcon = 'fa-file-text',
         blade.isLoading = false,
         blade.toolbarCommands = [
@@ -67,9 +65,11 @@ angular.module('virtoCommerce.orderModule')
                 name: "Save",
                 icon: 'fa fa-save',
                 executeMethod: function () {
-                    $scope.saveChanges();
+                    $scope.saveWorkflow();
                 },
                 permission: 'platform:security:manage'
             }
-        ];
+            ];
+
+        initialize();
     }]);

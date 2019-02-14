@@ -16,7 +16,7 @@ angular.module('virtoCommerce.orderModule')
             var newBlade = {
                 id: 'addWorkflow',
                 controller: 'virtoCommerce.orderModule.organizationWorkflowUploadController',
-                template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html',
+                template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
@@ -25,7 +25,7 @@ angular.module('virtoCommerce.orderModule')
             var newBlade = {
                 id: 'openWorkflowsList',
                 controller: 'virtoCommerce.orderModule.organizationWorkflowListController',
-                template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-list.tpl.html',
+                template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-list.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
