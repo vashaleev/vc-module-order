@@ -80,12 +80,12 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [CheckPermission(Permission = WorkflowPredefinedPermissions.Create)]
         public async Task<IHttpActionResult> CreateWorkflow(string name, string memberId)
         {
-            if (memberId == null)
+            if (string.IsNullOrWhiteSpace(memberId))
             {
                 return BadRequest("OrganizationId can't be null");
             }
 
-            if (name == String.Empty)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return BadRequest("Name can't be empty");
             }
