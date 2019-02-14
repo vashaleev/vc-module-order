@@ -65,7 +65,6 @@ angular.module('virtoCommerce.orderModule')
                     blade.isLoading = true;
                     blade.isAdding = false;
                     uploader.uploadAll();
-                    //blade.parentBlade.refresh();
                 },
                 canExecuteMethod: function () {
                     return !!$scope.uploader && $scope.uploader.queue.length;

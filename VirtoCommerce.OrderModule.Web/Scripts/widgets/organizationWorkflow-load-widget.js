@@ -30,10 +30,5 @@ angular.module('virtoCommerce.orderModule')
             bladeNavigationService.showBlade(newBlade, blade);
         };
 
-        $scope.$watch("blade.currentEntityId", function (id) {
-            console.log(id);
-            /*filter.productIds = [id];
-
-            if (id) refresh();*/
-        });
+        $scope.$watch("blade.currentEntityId", function (id) {});
     }]);

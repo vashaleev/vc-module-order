@@ -11,8 +11,6 @@ angular.module('virtoCommerce.orderModule')
             blade.refresh = function () {
                 blade.isLoading = true;
                 $scope.selectedNodeId = undefined;
-                console.log($scope);
-                console.log(blade);
                 workflowApi.getWorkflows({ memberId: blade.memberID },
                     function (data) {
                         blade.currentEntities = data.workflows;
@@ -41,7 +39,6 @@ angular.module('virtoCommerce.orderModule')
             $scope.setActive = function (data) {
                 $scope.selectedNodeId = data.id;
                 blade.isLoading = true;
-                console.log(data);
                 workflowApi.update({ id : data.id, isActive: true },
                     function () { blade.refresh(); },
                     function (error) { bladeNavigationService.setError('Error ' + error.status, blade); }
