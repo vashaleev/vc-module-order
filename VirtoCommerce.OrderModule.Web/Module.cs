@@ -76,7 +76,7 @@ namespace VirtoCommerce.OrderModule.Web
 
             _container.RegisterType<ICustomerOrderTotalsCalculator, DefaultCustomerOrderTotalsCalculator>(new ContainerControlledLifetimeManager());
 
-            _container.RegisterType<IWorkflowStateMachineService, WorkflowStateMachineService>();
+            _container.RegisterType<IWorkflowStateMachineService, WorkflowStateMachineServiceImpl>();
         }
 
         public override void PostInitialize()

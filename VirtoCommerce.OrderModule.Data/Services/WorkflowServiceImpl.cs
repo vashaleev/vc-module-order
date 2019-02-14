@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Common.Events;
-using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Domain.Order.Events;
 using VirtoCommerce.Domain.Order.Model;
 using VirtoCommerce.Domain.Order.Model.Search;
@@ -32,21 +31,23 @@ namespace VirtoCommerce.OrderModule.Data.Services
             var workflows = GetByIds(ids);
             using (var repository = RepositoryFactory())
             {
-                // CHECK IT!
-                var changedEntries = workflows.Select(x => new GenericChangedEntry<WorkflowModel>(x, EntryState.Modified));
+                //Raise domain events before deletion
+                var changedEntries = workflows.Select(x => new GenericChangedEntry<WorkflowModel>(x, EntryState.Deleted));
                 EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
 
                 repository.RemoveWorkflowsByIds(ids);
-
+                
                 repository.UnitOfWork.Commit();
-
-                EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
+                //Raise domain events after deletion
+                EventPublisher.Publish(new WorkflowChangedEvent(changedEntries));
             }
         }
 
         public void SaveChanges(WorkflowModel[] workflows)
         {
-            if (!IsOnlyOneActiveWorkflow(workflows))
+            var countActive = workflows.Count(x => x.IsActive);
+
+            if (countActive > 1)
             {
                 throw new ArgumentException("Too much activated workflows");
             }
@@ -58,7 +59,12 @@ namespace VirtoCommerce.OrderModule.Data.Services
             using (var changeTracker = GetChangeTracker(repository))
             {
                 var dataExistWorkflows = repository.GetWorkflows(workflows.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                DeactivatePreviousWorkflows(repository);
+
+                if (countActive > 0)
+                {
+                    DeactivatePreviousWorkflows(repository);
+                }
+
                 foreach (var workflow in workflows)
                 {
                     var originalEntity = dataExistWorkflows.FirstOrDefault(x => x.Id == workflow.Id);
@@ -114,7 +120,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
         {
             using (var repository = RepositoryFactory())
             {
-                repository.DisableChangesTracking(); // Do we need it?
+                repository.DisableChangesTracking(); 
 
                 var query = GetWorkflowsQuery(repository, criteria).Where(x => !x.IsDeleted);
                 var totalCount = query.Count();
@@ -154,7 +160,6 @@ namespace VirtoCommerce.OrderModule.Data.Services
                     if (workflow != null)
                     {
                         workflow = orderEntity.ToModel(workflow);
-
                         retVal.Add(workflow);
                     }
                 }
@@ -184,18 +189,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
 
             return query;
         }
-
-        private bool IsOnlyOneActiveWorkflow(WorkflowModel[] workflows)
-        {
-            var activeWorkflowsCount = workflows.Count(x => x.IsActive);
-            if (activeWorkflowsCount > 1)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+        
         private void DeactivatePreviousWorkflows(IOrderRepository repository)
         {
             var activatedWorkflows = repository.Workflows.Where(x => x.IsActive).ToList();

@@ -12,11 +12,11 @@ using StateMachine = Stateless.StateMachine<
 
 namespace VirtoCommerce.OrderModule.Data.Services
 {
-    public class WorkflowStateMachineService : IWorkflowStateMachineService
+    public class WorkflowStateMachineServiceImpl : IWorkflowStateMachineService
     {
         private readonly IWorkflowService _workflowService;
 
-        public WorkflowStateMachineService(IWorkflowService workflowService)
+        public WorkflowStateMachineServiceImpl(IWorkflowService workflowService)
         {
             _workflowService = workflowService;
         }

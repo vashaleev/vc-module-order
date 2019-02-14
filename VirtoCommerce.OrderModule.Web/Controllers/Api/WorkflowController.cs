@@ -10,7 +10,7 @@ using VirtoCommerce.Domain.Order.Model.Search;
 using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.OrderModule.Web.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
-using webModel = VirtoCommerce.OrderModule.Web.Model;
+using WebModel = VirtoCommerce.OrderModule.Web.Model;
 
 namespace VirtoCommerce.OrderModule.Web.Controllers.Api
 {
@@ -19,11 +19,13 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
     {
         private readonly IWorkflowService _workflowService;
         private readonly IWorkflowSearchService _searchService;
+        private readonly IWorkflowStateMachineService _stateMachineService;
 
-        public WorkflowController(IWorkflowService workflowService, IWorkflowSearchService searchService)
+        public WorkflowController(IWorkflowService workflowService, IWorkflowSearchService searchService, IWorkflowStateMachineService stateMachineService)
         {
             _workflowService = workflowService;
             _searchService = searchService;
+            _stateMachineService = stateMachineService;
         }
 
         /// <summary>
@@ -32,12 +34,12 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         /// <param name="criteria">criteria</param>
         [HttpPost]
         [Route("search")]
-        [ResponseType(typeof(webModel.WorkflowSearchResult))]
+        [ResponseType(typeof(WebModel.WorkflowSearchResult))]
         [CheckPermission(Permission = WorkflowPredefinedPermissions.Read)]
         public IHttpActionResult Search(WorkflowSearchCriteria criteria)
         {
             var result = _searchService.SearchWorkflows(criteria);
-            var retVal = new webModel.WorkflowSearchResult
+            var retVal = new WebModel.WorkflowSearchResult
             {
                 Workflows = result.Results.ToList(),
                 TotalCount = result.TotalCount
@@ -96,15 +98,9 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
             var provider = new MultipartMemoryStreamProvider();
 
             var file = await Request.Content.ReadAsMultipartAsync(provider);
-            string fileString;
-            try
-            {
-                fileString = await file.Contents[0].ReadAsStringAsync();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("No file in request" + ex);
-            }
+            var fileString = await file.Contents[0].ReadAsStringAsync();
+
+            _stateMachineService.Validate(fileString);
 
             var workflow = new WorkflowModel
             {
