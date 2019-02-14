@@ -1,18 +1,16 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.Domain.Order.Model;
 using VirtoCommerce.Domain.Order.Model.Search;
 using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.OrderModule.Web.Security;
-using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Core.Web.Assets;
 using VirtoCommerce.Platform.Core.Web.Security;
-using webModel = VirtoCommerce.OrderModule.Web.Model;
+using WebModel = VirtoCommerce.OrderModule.Web.Model;
 
 namespace VirtoCommerce.OrderModule.Web.Controllers.Api
 {
@@ -21,16 +19,13 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
     {
         private readonly IWorkflowService _workflowService;
         private readonly IWorkflowSearchService _searchService;
-        private readonly ISecurityService _securityService;
-        private readonly IPermissionScopeService _permissionScopeService;
+        private readonly IWorkflowStateMachineService _stateMachineService;
 
-        public WorkflowController(IWorkflowService workflowService, IWorkflowSearchService searchService,
-                                  ISecurityService securityService, IPermissionScopeService permissionScopeService)
+        public WorkflowController(IWorkflowService workflowService, IWorkflowSearchService searchService, IWorkflowStateMachineService stateMachineService)
         {
             _workflowService = workflowService;
             _searchService = searchService;
-            _securityService = securityService;
-            _permissionScopeService = permissionScopeService;
+            _stateMachineService = stateMachineService;
         }
 
         /// <summary>
@@ -39,14 +34,12 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         /// <param name="criteria">criteria</param>
         [HttpPost]
         [Route("search")]
-        [ResponseType(typeof(webModel.WorkflowSearchResult))]
+        [ResponseType(typeof(WebModel.WorkflowSearchResult))]
+        [CheckPermission(Permission = WorkflowPredefinedPermissions.Read)]
         public IHttpActionResult Search(WorkflowSearchCriteria criteria)
         {
-            //Scope bound ACL filtration
-            criteria = FilterWorkflowSearchCriteria(HttpContext.Current.User.Identity.Name, criteria);
-
             var result = _searchService.SearchWorkflows(criteria);
-            var retVal = new webModel.WorkflowSearchResult
+            var retVal = new WebModel.WorkflowSearchResult
             {
                 Workflows = result.Results.ToList(),
                 TotalCount = result.TotalCount
@@ -64,18 +57,13 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [HttpGet]
         [Route("{id}")]
         [ResponseType(typeof(WorkflowModel))]
+        [CheckPermission(Permission = WorkflowPredefinedPermissions.Read)]
         public IHttpActionResult GetById(string id)
         {
             var retVal = _workflowService.GetByIds(new[] { id }).FirstOrDefault();
             if (retVal == null)
             {
                 return NotFound();
-            }
-
-            var scopes = _permissionScopeService.GetObjectPermissionScopeStrings(retVal).ToArray();
-            if (!_securityService.UserHasAnyPermission(User.Identity.Name, scopes, OrderPredefinedPermissions.Read))
-            {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
             }
 
             return Ok(retVal);
@@ -89,12 +77,17 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [HttpPost]
         [Route("upload")]
         [ResponseType(typeof(WorkflowModel))]
-        //[CheckPermission(Permission = WorkflowPredefinedPermissions)]
+        [CheckPermission(Permission = WorkflowPredefinedPermissions.Create)]
         public async Task<IHttpActionResult> CreateWorkflow(string name, string memberId)
         {
-            if (memberId == null)
+            if (string.IsNullOrWhiteSpace(memberId))
             {
                 return BadRequest("OrganizationId can't be null");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name can't be empty");
             }
 
             if (!Request.Content.IsMimeMultipartContent())
@@ -105,10 +98,9 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
             var provider = new MultipartMemoryStreamProvider();
 
             var file = await Request.Content.ReadAsMultipartAsync(provider);
-
-            name = file.Contents[0].Headers.Where(x => x.Key == "Content Type").ToString();
-
             var fileString = await file.Contents[0].ReadAsStringAsync();
+
+            _stateMachineService.Validate(fileString);
 
             var workflow = new WorkflowModel
             {
@@ -121,21 +113,20 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
 
             _workflowService.SaveChanges(new[] { workflow });
 
-            return Ok(name);
+            return Ok(workflow);
         }
 
         /// <summary>
-        ///  Update a existing customer order 
+        ///  Update an existing customer order 
         /// </summary>
-        /// <param name="workflow">customer order</param>
+        /// <param name="workflow">workflow change model</param>
         [HttpPut]
         [Route("")]
         [ResponseType(typeof(void))]
-        // check permission
-        public IHttpActionResult Update(string workflow)
+        [CheckPermission(Permission = WorkflowPredefinedPermissions.Update)]
+        public IHttpActionResult Update(WorkflowModel workflow)
         {
-
-            //_customerOrderService.SaveChanges(new[] { customerOrder });
+            _workflowService.Update(workflow);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -147,27 +138,12 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ResponseType(typeof(void))]
-        //[CheckPermission(Permission = OrderPredefinedPermissions.Delete)]
+        [CheckPermission(Permission = WorkflowPredefinedPermissions.Delete)]
         public IHttpActionResult DeleteOrdersByIds([FromUri] string[] ids)
         {
             _workflowService.Delete(ids);
+
             return StatusCode(HttpStatusCode.NoContent);
-        }
-
-
-        //TODO: ТУТ КАКАЯ-ТО ХУЙНЯ!
-        private WorkflowSearchCriteria FilterWorkflowSearchCriteria(string userName, WorkflowSearchCriteria criteria)
-        {
-            if (!_securityService.UserHasAnyPermission(userName, null, OrderPredefinedPermissions.Read))
-            {
-                //Get defined user 'read' permission scopes
-                var readPermissionScopes = _securityService.GetUserPermissions(userName)
-                    .Where(x => x.Id.StartsWith(OrderPredefinedPermissions.Read))
-                    .SelectMany(x => x.AssignedScopes)
-                    .ToList();
-            }
-
-            return criteria;
         }
     }
 }

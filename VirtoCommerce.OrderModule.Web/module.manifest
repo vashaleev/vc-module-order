@@ -143,7 +143,10 @@
             <permission id="order:delete" name="Delete order" description="Permission to delete orders."/>
         </group>
         <group name="Workflow">
+            <permission id="workflow:read" name="Read workflow" description="Read workflow json."/>
             <permission id="workflow:create" name="Import workflow" description="Import workflow json."/>
+            <permission id="workflow:update" name="Update workflow" description="Update name and IsActive status workflow json."/>
+            <permission id="workflow:delete" name="Delete workflow" description="Delete workflow json."/>
         </group>
     </permissions>
 </module>
