@@ -3,6 +3,7 @@ angular.module('virtoCommerce.orderModule')
         function ($rootScope, $scope, workflowApi, bladeNavigationService, dialogService, uiGridHelper) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
+            blade.memberID = blade.parentBlade.origEntity.id;
             blade.updatePermission = 'content:update';
             blade.title = "orders.organization-workflow.approval-workflow";
             blade.contentType = 'workflows';
@@ -10,7 +11,9 @@ angular.module('virtoCommerce.orderModule')
             blade.refresh = function () {
                 blade.isLoading = true;
                 $scope.selectedNodeId = undefined;
-                workflowApi.getWorkflows({},
+                console.log($scope);
+                console.log(blade);
+                workflowApi.getWorkflows({ memberId: blade.memberID },
                     function (data) {
                         blade.currentEntities = data.workflows;
                         blade.isLoading = false;
@@ -22,10 +25,10 @@ angular.module('virtoCommerce.orderModule')
             }
 
             $scope.openBladeNew = function () {
-                $scope.openDetailsBlade();
+                $scope.openUploadBlade();
             };
 
-            /*$scope.openDetailsBlade = function (node) {
+            $scope.openUploadBlade = function (node) {
                 $scope.selectedNodeId = node && node.name;
                 var newBlade = {
                     id: 'addWorkflow',
@@ -33,7 +36,7 @@ angular.module('virtoCommerce.orderModule')
                     template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html',
                 };
                 bladeNavigationService.showBlade(newBlade, blade);
-            };*/
+            };
            
             $scope.setActive = function (data) {
                 $scope.selectedNodeId = data.id;

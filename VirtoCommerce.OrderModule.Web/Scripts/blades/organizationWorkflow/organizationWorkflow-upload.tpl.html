@@ -39,7 +39,7 @@
                     <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
                 </div>
 
-                <p class="note" ng-if="blade.isLoading">{{ 'orders.organization-workflow.labels.file-selected' | translate }} {{blade.workflowName}}</p>
+                <p class="note" ng-if="blade.isAdding">{{ 'orders.organization-workflow.labels.file-selected' | translate }} {{blade.fileName}}</p>
                 <p class="note" ng-if="blade.uploadCompleted">{{ 'orders.organization-workflow.labels.workflow-uploaded' | translate }}</p>
             </div>
         </div>
