@@ -16,5 +16,8 @@ namespace VirtoCommerce.OrderModule.Data.Repositories
 
         CustomerOrderEntity[] GetCustomerOrdersByIds(string[] ids, CustomerOrderResponseGroup responseGroup);
         void RemoveOrdersByIds(string[] ids);
+
+        WorkflowEntity[] GetWorkflows(string[] ids); // TODO: maybe add response group
+        void RemoveWorkflowsByIds(string[] ids);
     }
 }

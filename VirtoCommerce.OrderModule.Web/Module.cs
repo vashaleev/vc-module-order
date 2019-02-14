@@ -36,7 +36,7 @@ namespace VirtoCommerce.OrderModule.Web
     public class Module : ModuleBase, ISupportExportImportModule
     {
         private readonly string _connectionString = ConfigurationHelper.GetConnectionStringValue("VirtoCommerce.Orders") ?? ConfigurationHelper.GetConnectionStringValue("VirtoCommerce");
-        private readonly IUnityContainer _container; 
+        private readonly IUnityContainer _container;
 
         public Module(IUnityContainer container)
         {
@@ -70,6 +70,9 @@ namespace VirtoCommerce.OrderModule.Web
             _container.RegisterType<ICustomerOrderService, CustomerOrderServiceImpl>();
             _container.RegisterType<ICustomerOrderSearchService, CustomerOrderServiceImpl>();
             _container.RegisterType<ICustomerOrderBuilder, CustomerOrderBuilderImpl>();
+
+            _container.RegisterType<IWorkflowService, WorkflowServiceImpl>();
+            _container.RegisterType<IWorkflowSearchService, WorkflowServiceImpl>();
 
             _container.RegisterType<ICustomerOrderTotalsCalculator, DefaultCustomerOrderTotalsCalculator>(new ContainerControlledLifetimeManager());
         }
