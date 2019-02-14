@@ -3,14 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.Domain.Order.Model;
 using VirtoCommerce.Domain.Order.Model.Search;
 using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.OrderModule.Web.Security;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 using webModel = VirtoCommerce.OrderModule.Web.Model;
 
@@ -83,6 +81,11 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
             if (memberId == null)
             {
                 return BadRequest("OrganizationId can't be null");
+            }
+
+            if (name == String.Empty)
+            {
+                return BadRequest("Name can't be empty");
             }
 
             if (!Request.Content.IsMimeMultipartContent())

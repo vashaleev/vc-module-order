@@ -32,7 +32,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
             var workflows = GetByIds(ids);
             using (var repository = RepositoryFactory())
             {
-                // ТУТ ГОВНО!!!
+                // CHECK IT!
                 var changedEntries = workflows.Select(x => new GenericChangedEntry<WorkflowModel>(x, EntryState.Modified));
                 EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
 
@@ -95,7 +95,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
                 var workflow = repository.GetWorkflows(new[] { changedWorkflow.Id }).FirstOrDefault(x => !x.IsDeleted);
                 if (workflow == null)
                 {
-                    throw new ArgumentNullException("Model not for changing");
+                    throw new ArgumentNullException("No model with this id");
                 }
 
                 if (changedWorkflow.IsActive)
@@ -114,7 +114,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
         {
             using (var repository = RepositoryFactory())
             {
-                repository.DisableChangesTracking();
+                repository.DisableChangesTracking(); // Do we need it?
 
                 var query = GetWorkflowsQuery(repository, criteria).Where(x => !x.IsDeleted);
                 var totalCount = query.Count();
