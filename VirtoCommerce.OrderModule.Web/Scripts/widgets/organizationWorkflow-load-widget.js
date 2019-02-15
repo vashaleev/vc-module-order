@@ -2,7 +2,7 @@ angular.module('virtoCommerce.orderModule')
     .controller('virtoCommerce.orderModule.organizationWorkflowLoadWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
         var filter = { take: 0 };
-
+        
         /*function refresh() {
             $scope.loading = true;
 
@@ -15,6 +15,7 @@ angular.module('virtoCommerce.orderModule')
         blade.addNewWorkflow = function () {
             var newBlade = {
                 id: 'addWorkflow',
+                memberId: this.currentEntityId,
                 controller: 'virtoCommerce.orderModule.organizationWorkflowUploadController',
                 template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html'
             };
@@ -24,11 +25,13 @@ angular.module('virtoCommerce.orderModule')
         blade.openWorkflowsBlade = function () {
             var newBlade = {
                 id: 'openWorkflowsList',
+                memberId: this.currentEntityId,
                 controller: 'virtoCommerce.orderModule.organizationWorkflowListController',
                 template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-list.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
 
-        $scope.$watch("blade.currentEntityId", function (id) {});
+        $scope.$watch("blade.currentEntityId", function () { });
+        
     }]);

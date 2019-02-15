@@ -1,7 +1,6 @@
 angular.module('virtoCommerce.orderModule')
     .controller('virtoCommerce.orderModule.organizationWorkflowUploadController', ['$rootScope', '$scope', 'platformWebApp.dialogService', 'virtoCommerce.contentModule.contentApi', 'FileUploader', 'platformWebApp.bladeNavigationService', 'platformWebApp.authDataStorage', function ($rootScope, $scope, dialogService, contentApi, FileUploader, bladeNavigationService, authDataStorage) {
         var blade = $scope.blade;
-        blade.memberID = (blade.parentBlade.origEntity) ? blade.parentBlade.origEntity.id : blade.parentBlade.parentBlade.origEntity.id;
         blade.isAdding = false;
         blade.isLoading = false;
 
@@ -12,7 +11,6 @@ angular.module('virtoCommerce.orderModule')
             var uploader = $scope.uploader = new FileUploader({
                 scope: $scope,
                 headers: { Accept: 'application/json', Authorization: 'Bearer ' + authData.token },
-                queueLimit: 1,
                 autoUpload: false,
                 removeAfterUpload: true
             });
@@ -64,7 +62,8 @@ angular.module('virtoCommerce.orderModule')
                 executeMethod: function () {
                     blade.isLoading = true;
                     blade.isAdding = false;
-                    uploader.uploadAll();
+                    var fileQueue = uploader.getNotUploadedItems();
+                    uploader.uploadItem(fileQueue[fileQueue.length-1]);
                 },
                 canExecuteMethod: function () {
                     return !!$scope.uploader && $scope.uploader.queue.length;

@@ -218,7 +218,8 @@ angular.module(moduleName, ['virtoCommerce.catalogModule', 'virtoCommerce.pricin
 
         var organizationWorkflowLoadWidget = {
             controller: 'virtoCommerce.orderModule.organizationWorkflowLoadWidgetController',
-            template: 'Modules/$(VirtoCommerce.Orders)/Scripts/widgets/organizationWorkflow-load-widget.tpl.html'
+            template: 'Modules/$(VirtoCommerce.Orders)/Scripts/widgets/organizationWorkflow-load-widget.tpl.html',
+            isVisible: function (blade) { return !blade.isNew; }
         };
         widgetService.registerWidget(organizationWorkflowLoadWidget, 'organizationDetail2');
 
