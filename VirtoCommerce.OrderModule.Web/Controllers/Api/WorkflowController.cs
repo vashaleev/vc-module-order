@@ -139,7 +139,7 @@ namespace VirtoCommerce.OrderModule.Web.Controllers.Api
         [Route("")]
         [ResponseType(typeof(void))]
         [CheckPermission(Permission = WorkflowPredefinedPermissions.Delete)]
-        public IHttpActionResult DeleteOrdersByIds([FromUri] string[] ids)
+        public IHttpActionResult DeleteWorkflowsByIds([FromUri] string[] ids)
         {
             _workflowService.Delete(ids);
 
