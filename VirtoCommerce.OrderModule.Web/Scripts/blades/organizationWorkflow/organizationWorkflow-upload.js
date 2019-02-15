@@ -26,6 +26,7 @@ angular.module('virtoCommerce.orderModule')
             uploader.onAfterAddingFile = function (item) {
                 blade.isAdding = true;
                 blade.fileName = item.file.name;
+                bladeNavigationService.setError(null, blade);
             };
 
             uploader.onSuccessItem = function (fileItem, files) {
@@ -34,7 +35,12 @@ angular.module('virtoCommerce.orderModule')
             };
 
             uploader.onErrorItem = function (item, response, status, headers) {
-                bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
+                var customResponse = {
+                    status: status,
+                    statusText: item._file.name + ' upload failed',
+                    data: response
+                }
+                bladeNavigationService.setError(customResponse, blade);
             };
         }
 

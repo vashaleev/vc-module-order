@@ -39,7 +39,7 @@ angular.module('virtoCommerce.orderModule')
            
             $scope.setDeactive = function (data) {
                 blade.isLoading = true;
-                workflowApi.update({ id: data.id, isActive: false },
+                workflowApi.update({ id: data.id, isActive: false, memberId: data.memberId },
                     function () { blade.refresh(); },
                     function (error) { bladeNavigationService.setError('Error ' + error.status, blade); }
                 );
@@ -48,7 +48,7 @@ angular.module('virtoCommerce.orderModule')
             $scope.setActive = function (data) {
                 $scope.selectedNodeId = data.id;
                 blade.isLoading = true;
-                workflowApi.update({ id: data.id, isActive: true },
+                workflowApi.update({ id: data.id, isActive: true, memberId: data.memberId },
                     function () { blade.refresh(); },
                     function (error) { bladeNavigationService.setError('Error ' + error.status, blade); }
                 );
