@@ -29,7 +29,6 @@ angular.module('virtoCommerce.orderModule')
                 blade.fileName = item.file.name;
                 item.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
                 uploader.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
-                console.log(uploader.getNotUploadedItems ());
             };
 
             uploader.onSuccessItem = function (fileItem, files) {
