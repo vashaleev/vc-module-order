@@ -2,6 +2,7 @@ namespace VirtoCommerce.OrderModule.Web.Security
 {
     public static class WorkflowPredefinedPermissions
     {
+        public const string Access = "workflow:access";
         public const string Read = "workflow:read";
         public const string Create = "workflow:create";
         public const string Update = "workflow:update";
