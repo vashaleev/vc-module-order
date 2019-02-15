@@ -107,7 +107,7 @@ namespace VirtoCommerce.OrderModule.Data.Services
 
                 if (workflow.IsActive)
                 {
-                    DeactivatePreviousWorkflows(repository, workflow.MemberId);
+                    DeactivatePreviousWorkflows(repository, changeWorkflow.MemberId);
                 }
 
                 if (!string.IsNullOrWhiteSpace(workflow.Name))
