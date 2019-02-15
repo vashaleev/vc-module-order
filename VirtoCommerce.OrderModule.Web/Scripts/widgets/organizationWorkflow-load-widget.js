@@ -1,17 +1,7 @@
 angular.module('virtoCommerce.orderModule')
     .controller('virtoCommerce.orderModule.organizationWorkflowLoadWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
-        var filter = { take: 0 };
         
-        /*function refresh() {
-            $scope.loading = true;
-
-            reviewsApi.search(filter, function (data) {
-                $scope.loading = false;
-                $scope.totalCount = data.totalCount;
-            });
-        }*/
-
         blade.addNewWorkflow = function () {
             var newBlade = {
                 id: 'addWorkflow',

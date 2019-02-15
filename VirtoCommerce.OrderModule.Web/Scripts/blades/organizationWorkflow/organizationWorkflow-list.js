@@ -3,15 +3,17 @@ angular.module('virtoCommerce.orderModule')
         function ($rootScope, $scope, workflowApi, bladeNavigationService, dialogService, uiGridHelper) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
-            blade.updatePermission = 'content:update';
+            blade.updatePermission = 'workflow:update';
             blade.title = "orders.organization-workflow.approval-workflow";
             blade.contentType = 'workflows';
+            blade.defaultWorkflowName = undefined;
             blade.refresh = function () {
                 blade.isLoading = true;
                 $scope.selectedNodeId = undefined;
-                workflowApi.getWorkflows({ memberId: blade.memberID },
+                workflowApi.getWorkflows({ memberId: blade.memberId },
                     function (data) {
                         blade.currentEntities = data.workflows;
+                        blade.defaultWorkflowName = data.workflows.find(x => x.isActive) ? data.workflows.find(x => x.isActive).name : undefined;
                         blade.isLoading = false;
                     },
                     function (error) {
@@ -28,17 +30,25 @@ angular.module('virtoCommerce.orderModule')
                 $scope.selectedNodeId = node && node.name;
                 var newBlade = {
                     id: 'addWorkflow',
-                    memberId: this.memberId,
+                    memberId: blade.memberId,
                     controller: 'virtoCommerce.orderModule.organizationWorkflowUploadController',
                     template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html',
                 };
                 bladeNavigationService.showBlade(newBlade, blade);
             };
            
+            $scope.setDeactive = function (data) {
+                blade.isLoading = true;
+                workflowApi.update({ id: data.id, isActive: false },
+                    function () { blade.refresh(); },
+                    function (error) { bladeNavigationService.setError('Error ' + error.status, blade); }
+                );
+            };
+
             $scope.setActive = function (data) {
                 $scope.selectedNodeId = data.id;
                 blade.isLoading = true;
-                workflowApi.update({ id : data.id, isActive: true },
+                workflowApi.update({ id: data.id, isActive: true },
                     function () { blade.refresh(); },
                     function (error) { bladeNavigationService.setError('Error ' + error.status, blade); }
                 );
@@ -74,13 +84,14 @@ angular.module('virtoCommerce.orderModule')
                     executeMethod: function () {
                         var newBlade = {
                             id: 'addWorkflow',
+                            memberId: blade.memberId,
                             controller: 'virtoCommerce.orderModule.organizationWorkflowUploadController',
                             template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html',
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
                     canExecuteMethod: function () { return true; },
-                    permission: 'content:create'
+                    permission: 'workflow:create'
                 }
             ];
            

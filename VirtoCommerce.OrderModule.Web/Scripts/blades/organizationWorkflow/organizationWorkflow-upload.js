@@ -3,7 +3,6 @@ angular.module('virtoCommerce.orderModule')
         var blade = $scope.blade;
         blade.isAdding = false;
         blade.isLoading = false;
-
         
         if (!$scope.uploader) {
             var authData = authDataStorage.getStoredData();
@@ -27,8 +26,6 @@ angular.module('virtoCommerce.orderModule')
             uploader.onAfterAddingFile = function (item) {
                 blade.isAdding = true;
                 blade.fileName = item.file.name;
-                item.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
-                uploader.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberID;
             };
 
             uploader.onSuccessItem = function (fileItem, files) {
@@ -63,12 +60,17 @@ angular.module('virtoCommerce.orderModule')
                     blade.isLoading = true;
                     blade.isAdding = false;
                     var fileQueue = uploader.getNotUploadedItems();
-                    uploader.uploadItem(fileQueue[fileQueue.length-1]);
+                    if (fileQueue.length) {
+                        var uploadFile = fileQueue[fileQueue.length - 1];
+                        uploadFile.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberId;
+                        uploader.uploadItem(uploadFile);
+                    }
+                    
                 },
                 canExecuteMethod: function () {
                     return !!$scope.uploader && $scope.uploader.queue.length;
                 },
-                permission: 'platform:security:manage'
+                permission: 'workflow:create'
             }
             ];
         

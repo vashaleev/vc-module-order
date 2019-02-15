@@ -293,6 +293,9 @@
       "dialogs": {
         "title": "Delete confirmation",
         "message": "Are you sure you want to delete selected approval workflow?"
+      },
+      "commands": {
+        "set-deactive": "Deactive"
       }
     }
   }
