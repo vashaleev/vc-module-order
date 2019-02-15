@@ -62,7 +62,8 @@ namespace VirtoCommerce.OrderModule.Data.Services
 
                 if (countActive > 0)
                 {
-                    DeactivatePreviousWorkflows(repository);
+                    var activeWorkflow = workflows.FirstOrDefault(w => w.IsActive);
+                    DeactivatePreviousWorkflows(repository, activeWorkflow.MemberId);
                 }
 
                 foreach (var workflow in workflows)
@@ -94,26 +95,26 @@ namespace VirtoCommerce.OrderModule.Data.Services
             EventPublisher.Publish(new WorkflowChangeEvent(changedEntries));
         }
 
-        public void Update(WorkflowModel changedWorkflow)
+        public void Update(WorkflowModel workflow)
         {
             using (var repository = RepositoryFactory())
             {
-                var workflow = repository.GetWorkflows(new[] { changedWorkflow.Id }).FirstOrDefault(x => !x.IsDeleted);
-                if (workflow == null)
+                var changeWorkflow = repository.GetWorkflows(new[] { workflow.Id }).FirstOrDefault(x => !x.IsDeleted);
+                if (changeWorkflow == null)
                 {
-                    throw new ArgumentNullException("No model with this id");
+                    throw new ArgumentNullException(nameof(workflow), "No model with this id");
                 }
 
-                if (changedWorkflow.IsActive)
+                if (workflow.IsActive)
                 {
-                    DeactivatePreviousWorkflows(repository);
+                    DeactivatePreviousWorkflows(repository, workflow.MemberId);
                 }
 
-                if (!string.IsNullOrWhiteSpace(changedWorkflow.Name))
+                if (!string.IsNullOrWhiteSpace(workflow.Name))
                 {
-                    workflow.Name = changedWorkflow.Name;
+                    changeWorkflow.Name = workflow.Name;
                 }
-                workflow.IsActive = changedWorkflow.IsActive;
+                changeWorkflow.IsActive = workflow.IsActive;
 
                 CommitChanges(repository);
             }
@@ -193,9 +194,9 @@ namespace VirtoCommerce.OrderModule.Data.Services
             return query;
         }
         
-        private void DeactivatePreviousWorkflows(IOrderRepository repository)
+        private void DeactivatePreviousWorkflows(IOrderRepository repository, string memberId)
         {
-            var activatedWorkflows = repository.Workflows.Where(x => x.IsActive).ToList();
+            var activatedWorkflows = repository.Workflows.Where(x => x.IsActive && x.MemberId == memberId).ToList();
             foreach (var activeWorkflow in activatedWorkflows)
             {
                 activeWorkflow.IsActive = false;
