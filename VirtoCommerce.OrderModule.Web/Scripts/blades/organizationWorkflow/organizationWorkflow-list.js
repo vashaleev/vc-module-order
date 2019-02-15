@@ -3,11 +3,9 @@ angular.module('virtoCommerce.orderModule')
         function ($rootScope, $scope, workflowApi, bladeNavigationService, dialogService, uiGridHelper) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
-            blade.memberID = blade.parentBlade.origEntity.id;
             blade.updatePermission = 'content:update';
             blade.title = "orders.organization-workflow.approval-workflow";
             blade.contentType = 'workflows';
-
             blade.refresh = function () {
                 blade.isLoading = true;
                 $scope.selectedNodeId = undefined;
@@ -30,6 +28,7 @@ angular.module('virtoCommerce.orderModule')
                 $scope.selectedNodeId = node && node.name;
                 var newBlade = {
                     id: 'addWorkflow',
+                    memberId: this.memberId,
                     controller: 'virtoCommerce.orderModule.organizationWorkflowUploadController',
                     template: 'Modules/$(VirtoCommerce.Orders)/Scripts/blades/organizationWorkflow/organizationWorkflow-upload.tpl.html',
                 };
