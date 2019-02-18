@@ -285,6 +285,7 @@
         "add-workflow": "Add new approval workflow file",
         "file-selected": "Approval workflow file: ",
         "activated": "Activated",
+        "error": "Error",
         "progress": "Progress"
       },
       "placeholders": {

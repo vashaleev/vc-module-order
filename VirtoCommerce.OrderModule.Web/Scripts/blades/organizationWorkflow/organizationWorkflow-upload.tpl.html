@@ -11,27 +11,24 @@
                             <input focus-on required class="form-control" ng-model="blade.workflowName" placeholder="{{ 'orders.organization-workflow.placeholders.workflow-name' | translate }}" />
                         </div>
                     </div>
-                    <div ng-if="blade.workflowName">
-                        <div class="form-group" ng-show="uploader.isHTML5">
-                            <!-- 3. ng-file-over | ng-file-over="className" -->
-                            <div class="well my-drop-zone panel drag-area" uploader="uploader" nv-file-drop nv-file-over>
-                                <div class="drag-content">
-                                    {{ 'orders.organization-workflow.labels.drag-note' | translate }}
-                                </div>
+                    <div class="form-group" ng-show="uploader.isHTML5">
+                        <!-- 3. ng-file-over | ng-file-over="className" -->
+                        <div class="well my-drop-zone panel drag-area" uploader="uploader" nv-file-drop nv-file-over>
+                            <div class="drag-content">
+                                {{ 'orders.organization-workflow.labels.drag-note' | translate }}
                             </div>
                         </div>
-
-                        <!-- 2. ng-file-select | ng-file-select="options" -->
-                        <div class="form-input __file">
-                            <input type="file" multiple uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1">
-                            <input type="text" style="z-index: 1; cursor: default;" readonly="">
-                            <button class="btn __file" type="button" onclick="$('input[type=file]').trigger('click')" title="Select asset file(s)">
-                                <i class="btn-ico fa fa-file"></i>
-                            </button>
-                        </div>
-
                     </div>
-                    
+
+                    <!-- 2. ng-file-select | ng-file-select="options" -->
+                    <div class="form-input __file">
+                        <input type="file" multiple uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1">
+                        <input type="text" style="z-index: 1; cursor: default;" readonly="">
+                        <button class="btn __file" type="button" onclick="$('input[type=file]').trigger('click')" title="Select asset file(s)">
+                            <i class="btn-ico fa fa-file"></i>
+                        </button>
+                    </div>
+
                 </form>
 
                 <div ng-show="uploader.isUploading">
@@ -41,6 +38,14 @@
 
                 <p class="note" ng-if="blade.isAdding">{{ 'orders.organization-workflow.labels.file-selected' | translate }} {{blade.fileName}}</p>
                 <p class="note" ng-if="blade.uploadCompleted">{{ 'orders.organization-workflow.labels.workflow-uploaded' | translate }}</p>
+
+                <div ng-if="blade.errorCount > 0">
+                    <span class="sub-t">{{ 'orders.organization-workflow.labels.error' | translate }}</span>
+                    <div class="note error" ng-repeat="error in blade.errors track by $index">
+                        <p class="error">{{error.statusText}}</p>
+                        <p>{{error.data.exceptionMessage}}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

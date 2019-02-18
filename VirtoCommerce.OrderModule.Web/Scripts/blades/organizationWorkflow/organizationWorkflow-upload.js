@@ -3,7 +3,8 @@ angular.module('virtoCommerce.orderModule')
         var blade = $scope.blade;
         blade.isAdding = false;
         blade.isLoading = false;
-        
+        blade.errors = [];
+        blade.errorCount = 0;
         if (!$scope.uploader) {
             var authData = authDataStorage.getStoredData();
 
@@ -26,11 +27,15 @@ angular.module('virtoCommerce.orderModule')
             uploader.onAfterAddingFile = function (item) {
                 blade.isAdding = true;
                 blade.fileName = item.file.name;
-                bladeNavigationService.setError(null, blade);
+                //bladeNavigationService.setError(null, blade);
+                blade.errors = [];
+                blade.errorCount = 0;
             };
 
             uploader.onSuccessItem = function (fileItem, files) {
                 blade.isLoading = false;
+                blade.errors = [];
+                blade.errorCount = 0;
                 refreshParentAndClose();
             };
 
@@ -39,8 +44,12 @@ angular.module('virtoCommerce.orderModule')
                     status: status,
                     statusText: item._file.name + ' upload failed',
                     data: response
-                }
-                bladeNavigationService.setError(customResponse, blade);
+                };
+                console.log(customResponse.data);
+                blade.errors.push(customResponse);
+                blade.errorCount = blade.errors.length;
+                blade.isLoading = false;
+                //bladeNavigationService.setError(customResponse, blade);
             };
         }
 
@@ -53,7 +62,7 @@ angular.module('virtoCommerce.orderModule')
             blade.parentBlade.refresh();
         }
 
-        
+
 
         blade.title = 'orders.organization-workflow.title',
         blade.headIcon = 'fa-file-text',
@@ -71,7 +80,7 @@ angular.module('virtoCommerce.orderModule')
                         uploadFile.url = 'api/workflow/upload?name=' + blade.workflowName + '&memberId=' + blade.memberId;
                         uploader.uploadItem(uploadFile);
                     }
-                    
+
                 },
                 canExecuteMethod: function () {
                     return !!$scope.uploader && $scope.uploader.queue.length;
@@ -79,5 +88,5 @@ angular.module('virtoCommerce.orderModule')
                 permission: 'workflow:create'
             }
             ];
-        
+
     }]);
